@@ -6,8 +6,9 @@ using namespace std;
 using namespace cv;
 
 //不同操作系统选择不同的路径
-//#define ROADBMP  "E:\\Files\\OpenCV++\\14.bmp"
-#define ROADBMP  "/run/media/anysets/Files/Files/OpenCV++/test.BMP"
+// const string ROAD = "E:\\AR\\image\\测试图.BMP";
+#define ROADBMP  "E:\\AR\\image\\测试图.BMP"
+//#define ROADBMP  "/run/media/anysets/Files/Files/OpenCV++/test.BMP"
 
 //读取图片
 Mat img = imread(ROADBMP);
