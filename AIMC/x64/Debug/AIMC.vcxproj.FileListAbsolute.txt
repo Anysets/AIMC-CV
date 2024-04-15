@@ -1,0 +1,2 @@
+E:\AR\opencv\AIMC\x64\Debug\AIMC.exe
+E:\AR\opencv\AIMC-CV\AIMC\x64\Debug\AIMC.exe
