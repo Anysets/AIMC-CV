@@ -1,29 +1,56 @@
 #include "image_process.h"
+#include <fstream>
+#include <vector>
 #define _CRT_SECURE_NO_WARNINGS
 /*
-è¿™é‡Œæ˜¯èµ·ç‚¹ï¼ˆ0.0ï¼‰************  col  *â€”â€”>*************xå€¼æœ€å¤§
+ÕâÀïÊÇÆğµã£¨0.0£©************  col  *¡ª¡ª>*************xÖµ×î´ó
 ************************************************************
 ************************************************************
 ************************************************************
 ************************************************************
-******************å‡å¦‚è¿™æ˜¯ä¸€å‰¯å›¾åƒ*************************
+******************¼ÙÈçÕâÊÇÒ»¸±Í¼Ïñ*************************
 row  *****************************************************
 ***********************************************************
 ***********************************************************
 ***********************************************************
 ***********************************************************
 ***********************************************************
-yå€¼æœ€å¤§*******************************************(94.60)
+yÖµ×î´ó*******************************************(94.60)
 */
+#define ROAD  "/home/anysets/Documents/Photos/11.BMP"
 #define IMAGE_H 120
 #define IMAGE_W 188
 #define image_h 60
 #define image_w 120
-uint8_t image[IMAGE_H][IMAGE_W];    //åŸå§‹å›¾åƒ
-uint8_t bin_image[image_h][image_w]; //æœ€åä½¿ç”¨çš„äºŒå€¼åŒ–å›¾åƒ
+uint8_t image_center = image_w / 2;
+
+//½«Í¼ÏñÊı×é´òÓ¡ÖÁcsvÎÄ¼ş--------------------------------------------------------
+void printToCSV(uint8_t matrix[][image_w], const std::string& filename) {
+	std::ofstream outputFile(filename);
+
+	if (!outputFile.is_open()) {
+		std::cerr << "ÎŞ·¨´ò¿ªÎÄ¼ş£º" << filename << std::endl;
+		return;
+	}
+
+	for (int i = 0; i < image_h; ++i) {
+		for (int j = 0; j < image_w; ++j) {
+			outputFile << static_cast<int>(matrix[i][j]);
+			if (j != image_w - 1)
+				outputFile << ",";
+		}
+		outputFile << std::endl;
+	}
+
+	outputFile.close();
+	printf("Êä³öÎªcsv³É¹¦\n");
+}
+
+uint8_t image[IMAGE_H][IMAGE_W];    //Ô­Ê¼Í¼Ïñ
+uint8_t bin_image[image_h][image_w]; //×îºóÊ¹ÓÃµÄ¶şÖµ»¯Í¼Ïñ
 void dataTrans(const Mat& image, uint8_t imageArray[][IMAGE_W]) {
 	Mat grayImage;
-	cvtColor(image, grayImage, COLOR_BGR2GRAY); // å°†å½©è‰²å›¾åƒè½¬æ¢ä¸ºç°åº¦å›¾åƒ
+	cvtColor(image, grayImage, COLOR_BGR2GRAY); // ½«²ÊÉ«Í¼Ïñ×ª»»Îª»Ò¶ÈÍ¼Ïñ
 
 	for (int i = 0; i < IMAGE_H; ++i) {
 		for (int j = 0; j < IMAGE_W; ++j) {
@@ -31,7 +58,7 @@ void dataTrans(const Mat& image, uint8_t imageArray[][IMAGE_W]) {
 		}
 	}
 }
-//å¤§æ´¥æ³•æ±‚é˜ˆå€¼
+//´ó½ò·¨ÇóãĞÖµ
 uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
     #define GrayScale 256
     int Pixel_Max = 0;
@@ -49,32 +76,32 @@ uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
     }
 
     uint32_t gray_sum = 0;
-    // ç»Ÿè®¡ç°åº¦çº§ä¸­æ¯ä¸ªåƒç´ åœ¨æ•´å¹…å›¾åƒä¸­çš„ä¸ªæ•°
+    // Í³¼Æ»Ò¶È¼¶ÖĞÃ¿¸öÏñËØÔÚÕû·ùÍ¼ÏñÖĞµÄ¸öÊı
     for (i = 0; i < height; i += 2) {
         for (j = 0; j < width; j += 2) {
-            pixelCount[(int)image[i][j]]++;  // å°†å½“å‰çš„ç‚¹çš„åƒç´ å€¼ä½œä¸ºè®¡æ•°æ•°ç»„çš„ä¸‹æ ‡
-            gray_sum += (int)image[i][j];       // ç°åº¦å€¼æ€»å’Œ
+            pixelCount[(int)image[i][j]]++;  // ½«µ±Ç°µÄµãµÄÏñËØÖµ×÷Îª¼ÆÊıÊı×éµÄÏÂ±ê
+            gray_sum += (int)image[i][j];       // »Ò¶ÈÖµ×ÜºÍ
             if (image[i][j] > Pixel_Max)   Pixel_Max = image[i][j];
             if (image[i][j] < Pixel_Min)   Pixel_Min = image[i][j];
         }
     }
 
-    // è®¡ç®—æ¯ä¸ªåƒç´ å€¼çš„ç‚¹åœ¨æ•´å¹…å›¾åƒä¸­çš„æ¯”ä¾‹
+    // ¼ÆËãÃ¿¸öÏñËØÖµµÄµãÔÚÕû·ùÍ¼ÏñÖĞµÄ±ÈÀı
     for (i = Pixel_Min; i < Pixel_Max; i++) {
         pixelPro[i] = (float)pixelCount[i] / pixelSum;
     }
 
-    // éå†ç°åº¦çº§[0,255]
+    // ±éÀú»Ò¶È¼¶[0,255]
     float w0, w1, u0tmp, u1tmp, u0, u1, u, deltaTmp, deltaMax = 0;
     w0 = w1 = u0tmp = u1tmp = u0 = u1 = u = deltaTmp = 0;
     for (j = Pixel_Min; j < Pixel_Max; j++) {
-        w0 += pixelPro[j];  // èƒŒæ™¯éƒ¨åˆ†æ¯ä¸ªç°åº¦å€¼çš„åƒç´ ç‚¹æ‰€å æ¯”ä¾‹ä¹‹å’Œ   å³èƒŒæ™¯éƒ¨åˆ†çš„æ¯”ä¾‹
-        u0tmp += j * pixelPro[j];  // èƒŒæ™¯éƒ¨åˆ† æ¯ä¸ªç°åº¦å€¼çš„ç‚¹çš„æ¯”ä¾‹ *ç°åº¦å€¼
+        w0 += pixelPro[j];  // ±³¾°²¿·ÖÃ¿¸ö»Ò¶ÈÖµµÄÏñËØµãËùÕ¼±ÈÀıÖ®ºÍ   ¼´±³¾°²¿·ÖµÄ±ÈÀı
+        u0tmp += j * pixelPro[j];  // ±³¾°²¿·Ö Ã¿¸ö»Ò¶ÈÖµµÄµãµÄ±ÈÀı *»Ò¶ÈÖµ
         w1 = 1 - w0;
         u1tmp = gray_sum / pixelSum - u0tmp;
-        u0 = u0tmp / w0;              // èƒŒæ™¯å¹³å‡ç°åº¦
-        u1 = u1tmp / w1;              // å‰æ™¯å¹³å‡ç°åº¦
-        u = u0tmp + u1tmp;            // å…¨å±€å¹³å‡ç°åº¦
+        u0 = u0tmp / w0;              // ±³¾°Æ½¾ù»Ò¶È
+        u1 = u1tmp / w1;              // Ç°¾°Æ½¾ù»Ò¶È
+        u = u0tmp + u1tmp;            // È«¾ÖÆ½¾ù»Ò¶È
         deltaTmp = (float)(w0 * w1 * (u0 - u1) * (u0 - u1));
         if (deltaTmp > deltaMax) {
             deltaMax = deltaTmp;
@@ -84,7 +111,7 @@ uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
             break;
         }
     }
-    //å›ºå®šé˜ˆå€¼
+    //¹Ì¶¨ãĞÖµ
 //if (threshold > 90 && threshold < 130)
 //    last_threshold = threshold;
 //else
@@ -92,24 +119,24 @@ uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
 
     return threshold;
 }
-// å¤§æ´¥æ³•äºŒå€¼åŒ–
+// ´ó½ò·¨¶şÖµ»¯
 void turn_to_bin(void) {
     uint8_t image_threshold = otsuThreshold(image);
-    printf("é˜ˆå€¼=%d\n", image_threshold);
+    printf("ãĞÖµ=%d\n", image_threshold);
 
-    // éå†åŸå§‹å›¾åƒæ•°ç»„ï¼Œæ ¹æ®åŠ¨æ€é˜ˆå€¼è¿›è¡ŒäºŒå€¼åŒ–
+    // ±éÀúÔ­Ê¼Í¼ÏñÊı×é£¬¸ù¾İ¶¯Ì¬ãĞÖµ½øĞĞ¶şÖµ»¯
     for (int i = 0; i < IMAGE_H; ++i) {
         for (int j = 0; j < IMAGE_W; ++j) {
             if (image[i][j] > image_threshold) {
-                image[i][j] = 255; // å¦‚æœåŸå§‹å›¾åƒç°åº¦å€¼å¤§äºé˜ˆå€¼ï¼Œè®¾ç½®ä¸ºç™½è‰²åƒç´ 
+                image[i][j] = 255; // Èç¹ûÔ­Ê¼Í¼Ïñ»Ò¶ÈÖµ´óÓÚãĞÖµ£¬ÉèÖÃÎª°×É«ÏñËØ
             }
             else {
-                image[i][j] = 0; // å¦‚æœåŸå§‹å›¾åƒç°åº¦å€¼å°äºç­‰äºé˜ˆå€¼ï¼Œè®¾ç½®ä¸ºé»‘è‰²åƒç´ 
+                image[i][j] = 0; // Èç¹ûÔ­Ê¼Í¼Ïñ»Ò¶ÈÖµĞ¡ÓÚµÈÓÚãĞÖµ£¬ÉèÖÃÎªºÚÉ«ÏñËØ
             }
         }
     }
 }
-//å›¾åƒå‹ç¼©ä¸€å€
+//Í¼ÏñÑ¹ËõÒ»±¶
 void image_compress(uint8_t image[IMAGE_H][IMAGE_W], uint8_t iamge_zip[image_h][image_w]) {
 	for (uint8_t row = 0; row < IMAGE_H; row+=2) {
 		for (uint8_t col = 0; col < IMAGE_W; col+=2) {
@@ -117,27 +144,169 @@ void image_compress(uint8_t image[IMAGE_H][IMAGE_W], uint8_t iamge_zip[image_h][
 		}
 	}
 }
-//ç”»ä¸ªé»‘æ¡†
+//»­¸öºÚ¿ò
 void image_draw_rectan(uint8_t image[image_h][image_w]) {
-    for (uint8_t i = 0; i < image_h; i++) { //æŠŠå‰ä¸¤åˆ—å’Œæœ€åä¸¤åˆ—ç”»é»‘æ¡†
+    for (uint8_t i = 0; i < image_h; i++) { //°ÑÇ°Á½ÁĞºÍ×îºóÁ½ÁĞ»­ºÚ¿ò
         image[i][0] = 0;
         image[i][1] = 0;
         image[i][image_w - 1] = 0;
         image[i][image_w - 2] = 0;
     }
-    for (uint8_t i = 0; i < image_w; i++) { //æŠŠå›¾åƒæœ€ä¸Šé¢ç”»é»‘æ¡†
+    for (uint8_t i = 0; i < image_w; i++) { //°ÑÍ¼Ïñ×îÉÏÃæ»­ºÚ¿ò
         image[0][i] = 0;
         image[1][i] = 0;
     }
 }
+
+//ÕÒµ½Æğµã£¬´Ó×îµ×²¿µÄÖĞĞÄ¿ªÊ¼Ñ°ÕÒ
+uint32_t start_point_l[2] = { 0 };
+uint32_t start_point_r[2] = { 0 };
+uint32_t start_line = image_h - 1;
+uint8_t getStartPoint()
+{
+	uint8_t left_flag = 0;
+	uint8_t right_flag = 0;
+	cout << "Found Left Start Point: " << start_point_l[0] << ", " << start_point_l[1] << endl;
+    cout << "Found Right Start Point: " << start_point_r[0] << ", " << start_point_r[1] << endl;
+	//³õÊ¼»¯
+	start_point_l[0] = 0;
+	start_point_l[1] = 0;
+	start_point_r[0] = 0;
+	start_point_r[1] = 0;
+	//´ÓÖĞ¼äÏò×óÑ°ÕÒ
+	for (uint32_t i = image_center; i > 1; i--)  //i>1µÄÔ­ÒòÊÇ0ºÍ1Á½ÁĞÒÑ¾­±»È«²¿ÖÃ0ÁË£¬ÇÒÈôi=0»ò1Ê±ÏÂÃæÊı×é»áÔ½½ç
+	{
+		if (bin_image[start_line][i] == 255 && bin_image[start_line][i - 1] == 0 && bin_image[start_line][i - 2] == 0)
+		{
+			start_point_l[0] = start_line; //ĞĞ
+			start_point_l[1] = i-1; //ÁĞ
+			left_flag = 1;
+			break;
+		}
+	}
+	//´ÓÖĞ¼äÏòÓÒÑ°ÕÒ
+	for (uint32_t i = image_center; i < image_w - 2; i++)  //i < image_w-2µÄÔ­ÒòÍ¬ÉÏ
+	{
+		if (bin_image[start_line][i] == 255 && bin_image[start_line][i + 1] == 0 && bin_image[start_line][i + 2] == 0)
+		{
+			start_point_r[0] = start_line; //x×ø±ê
+			start_point_r[1] = i+1;
+			right_flag = 1;
+			break;
+		}
+	}
+	if (left_flag && right_flag) { return 1; }
+	else { return 0; }
+}
+
+//°ËÁÚÓòrewrite
+//¼ÇÂ¼×ó±ß½çµÄÊı¾İ
+uint8_t border_location_left[400][2] = { 0 };  //¼ÇÂ¼±ß½çÎ»ÖÃ
+uint8_t border_count_left = 0;
+int8_t growth_direction_left[400] = { -1 };  //¼ÇÂ¼Éú³¤·½Ïò
+uint16_t growth_count_left = 0;
+//¼ÇÂ¼ÓÒ±ß½çµÄÊı¾İ
+uint8_t border_location_right[400][2] = { 0 };  //¼ÇÂ¼±ß½çÎ»ÖÃ
+uint8_t border_count_right = 0;
+int8_t growth_direction_right[400] = { -1 };  //¼ÇÂ¼Éú³¤·½Ïò
+uint16_t growth_count_right = 0;
+void neighborSearch()
+{
+    //×ó±ß½ç²¿·Ö
+	/*
+        [2]  [1]  [0/8]
+
+        [3]  [ ]  [7]
+
+        [4]  [5]  [6]
+    */
+    int32_t neighbor_left[9][2] = {{-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}};
+    for (int j = 0; j < 100; j++)
+    {
+		for (int i = 0; i < 8; i++)
+        {
+            // printf("%d\n", bin_image[start_point_l[0]][start_point_l[1]]);
+            if (bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]] == 255 && bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] == 0)
+            {
+                // printf("h=%d\n", bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]]);
+                // printf("h=%d\n", bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]]);
+                growth_direction_left[growth_count_left] = i;
+				growth_count_left++;
+                border_location_left[border_count_left][0] = start_point_l[0] + neighbor_left[i+1][0];
+                border_location_left[border_count_left][1] = start_point_l[1] + neighbor_left[i+1][1];
+				bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] = 151;
+                start_point_l[0] = start_point_l[0] + neighbor_left[i+1][0];
+                start_point_l[1] = start_point_l[1] + neighbor_left[i+1][1];
+				printf("New Left Start Point: %d, %d\n", start_point_l[0], start_point_l[1]);
+                printf("finished\n");
+				printf("%d\n", j);
+                break;
+            }
+        }
+    }
+	// ÓÃÓÚ·ÖÎöÉú³¤·½Ïò
+	// printf("growth_count_left: %d", growth_count_left);
+	// for (int i = 0; i< 200; i++)
+	// {
+	// 	printf("%d\n", growth_direction_left[i]);
+	// }
+	//ÓÒ±ß½ç²¿·Ö
+    /*
+        [0/8]  [1]  [2]
+
+        [7]  [ ]  [3]
+
+        [6]  [5]  [4]
+    */
+	int32_t neighbor_right[9][2] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
+	for (int j = 0; j < 100; j++)
+    {
+		for (int i = 0; i < 8; i++)
+        {
+            if (bin_image[start_point_r[0] + neighbor_right[i][0]][start_point_r[1] + neighbor_right[i][1]] == 255  && (bin_image[start_point_r[0] + neighbor_right[i+1][0]][start_point_r[1] + neighbor_right[i+1][1]] == 0 || bin_image[start_point_r[0] + neighbor_right[i+1][0]][start_point_r[1] + neighbor_right[i+1][1]] == 151))
+            {
+                growth_direction_right[growth_count_right] = i;
+				growth_count_right++;
+                border_location_right[border_count_right][0] = start_point_r[0] + neighbor_right[i+1][0];
+                border_location_right[border_count_right][1] = start_point_r[1] + neighbor_right[i+1][1];
+				bin_image[start_point_r[0] + neighbor_right[i+1][0]][start_point_r[1] + neighbor_right[i+1][1]] = 151;
+                start_point_r[0] = start_point_r[0] + neighbor_right[i+1][0];
+                start_point_r[1] = start_point_r[1] + neighbor_right[i+1][1];
+				printf("New Right Start Point: %d, %d\n", start_point_r[0], start_point_r[1]);
+				printf("growth_direction_right: %d\n", growth_direction_right[j]);
+                printf("finished\n");
+				printf("%d\n", j);
+                break;
+            }
+
+        }
+    }
+	// ÓÃÓÚ·ÖÎöÉú³¤·½Ïò
+	// printf("growth_count_right: %d", growth_count_right);
+	// for (int i = 0; i< 200; i++)
+	// {
+	// 	printf("%d\n", growth_direction_right[i]);
+	// }
+}
+
 void image_process(void)
 {
-    turn_to_bin();  //å›¾åƒäºŒå€¼åŒ–
-    image_compress(image,bin_image); //å›¾åƒå‹ç¼©
+    turn_to_bin();  //Í¼Ïñ¶şÖµ»¯
+    image_compress(image,bin_image); //Í¼ÏñÑ¹Ëõ
     image_draw_rectan(bin_image);
+    if (getStartPoint())  //ÏÈ»ñµÃÆğµã
+	{
+		printf("Start point found.\n");
+        cout << "Found Left Start Point: " << start_point_l[0] << ", " << start_point_l[1] << endl;
+        cout << "Found Right Start Point: " << start_point_r[0] << ", " << start_point_r[1] << endl;
+        neighborSearch();
+		// search((uint16)USE_num, image, bin_image, &data_statics_l, &data_statics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+	}
+    printToCSV(bin_image, "output.csv");
 }
+
 int main(){
-	const string ROAD = "/home/anysets/Documents/Photos/test.BMP";
+	// const string ROAD = "/home/anysets/Documents/Photos/test.BMP";
 	Mat roadImage = imread(ROAD);
 	if (roadImage.empty())
     {
@@ -147,15 +316,15 @@ int main(){
 	dataTrans(roadImage, image);
 
     image_process();
-    Mat Binimage(image_h, image_w, CV_8UC1);
-    for (int i = 0; i < image_h; i++) {
-        for (int j = 0; j < image_w; j++) {
-            Binimage.at<uint8_t>(i, j) = bin_image[i][j];
-        }
-    }
-    // æ˜¾ç¤ºå›¾åƒ
-    namedWindow("äºŒå€¼åŒ–");
-    imshow("äºŒå€¼åŒ–", Binimage);
+    // Mat Binimage(image_h, image_w, CV_8UC1);
+    // for (int i = 0; i < image_h; i++) {
+    //     for (int j = 0; j < image_w; j++) {
+    //         Binimage.at<uint8_t>(i, j) = bin_image[i][j];
+    //     }
+    // }
+    // ÏÔÊ¾Í¼Ïñ
+    // namedWindow("¶şÖµ»¯");
+    // imshow("¶şÖµ»¯", Binimage);
 
 	namedWindow("output", WINDOW_NORMAL);
 	imshow("output", roadImage);

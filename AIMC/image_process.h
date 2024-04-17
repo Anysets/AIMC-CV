@@ -2,7 +2,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include<iostream>
+#include <iostream>
 using namespace std;
 using namespace cv;
 //定义几种颜色
