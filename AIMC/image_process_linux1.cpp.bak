@@ -17,14 +17,13 @@ row  *****************************************************
 ***********************************************************
 y值最大*******************************************(94.60)
 */
-#define ROAD  "/home/anysets/Documents/Photos/1.BMP"
+#define ROAD  "/home/anysets/Documents/Photos/test.BMP"
 // #define ROAD "E:\\Files\\OpenCV++\\test.BMP"
 #define IMAGE_H 120
 #define IMAGE_W 188
 #define image_h 60
 #define image_w 120
-//注意这个border_length不能太多，会导致数组越界
-#define border_length 50
+#define border_length 150
 uint8_t image_center = image_w / 2;
 
 //将图像数组打印至csv文件--------------------------------------------------------
@@ -206,12 +205,12 @@ int8_t getStartPoint()
 //记录左边界的数据
 int32_t border_location_left[border_length][2] = { 0 };  //记录边界位置
 int32_t border_count_left = 0;
-int32_t growth_direction_left[border_length] = { 0 };  //记录生长方向
+int8_t growth_direction_left[border_length] = { -1 };  //记录生长方向
 int32_t growth_count_left = 0;
 //记录右边界的数据
 int32_t border_location_right[border_length][2] = { 0 };  //记录边界位置
 int32_t border_count_right = 0;
-int32_t growth_direction_right[border_length] = { 0 };  //记录生长方向
+int8_t growth_direction_right[border_length] = { -1 };  //记录生长方向
 int32_t growth_count_right = 0;
 void neighborSearch()
 {
@@ -223,28 +222,25 @@ void neighborSearch()
 
         [4]  [5]  [6]
     */
-    int32_t neighbor_left[9][2] = {{-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}};
+    int8_t neighbor_left[9][2] = {{-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}};
     for (int j = 0; j < border_length; j++)
     {
-		printf("%d", j);
-        for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 8; i++)
         {
-            // printf("ciallo:%d\n", bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]]);
-            // printf("ciallo+1:%d\n", bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]]);
+            // printf("%d\n", bin_image[start_point_l[0]][start_point_l[1]]);
             if (bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]] == 255 && bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] == 0)
             {
                 // printf("h=%d\n", bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]]);
                 // printf("h=%d\n", bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]]);
                 growth_direction_left[growth_count_left] = i;
 				growth_count_left++;
-                border_count_left++;
-                printf("start_point_l[0] + neighbor_left[i+1][0]=%d\n", start_point_l[0] + neighbor_left[i+1][0]);
+                
+                // printf("start_point_l[0] + neighbor_left[i+1][0]=%d\n", start_point_l[0] + neighbor_left[i+1][0]);
                 border_location_left[border_count_left][0] = start_point_l[0] + neighbor_left[i+1][0];
                 border_location_left[border_count_left][1] = start_point_l[1] + neighbor_left[i+1][1];
-                // printf("%d : %d, %d\n", j, start_point_l[0] + neighbor_left[i+1][0], start_point_l[1] + neighbor_left[i+1][1]);
-                // printf("%d:border_location_left[7]: %d, %d\n", j, border_location_left[7][0], border_location_left[7][1]);
-				// printf("%d\n", border_count_left);
-                // bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] = 151;
+                printf("%d : %d, %d\n", j, start_point_l[0] + neighbor_left[i+1][0], start_point_l[1] + neighbor_left[i+1][1]);
+                border_count_left++;
+				bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] = 151;
                 start_point_l[0] = start_point_l[0] + neighbor_left[i+1][0];
                 start_point_l[1] = start_point_l[1] + neighbor_left[i+1][1];
 				// printf("New Left Start Point: %d, %d\n", start_point_l[0], start_point_l[1]);
@@ -254,21 +250,16 @@ void neighborSearch()
             }
         }
     }
-    // 这是在外部修改bin_image的实验
+    // 检查border_location_left
     for (int i = 0; i < border_length; i++)
     {
-        bin_image[border_location_left[i][0]][border_location_left[i][1]] = 151;
+        printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
     }
-    // 检查border_location_left
-    // for (int i = 0; i < border_length; i++)
-    // {
-    //     printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
-    // }
-    // printf("------------------------------------------------------");
-    // for (int i = 0; i < border_length; i++)
-    // {
-    //     printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
-    // }
+    printf("------------------------------------------------------");
+    for (int i = 0; i < border_length; i++)
+    {
+        printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
+    }
 	// 用于分析生长方向
 	// printf("growth_count_left: %d", growth_count_left);
 	// for (int i = 0; i< 200; i++)
@@ -283,7 +274,7 @@ void neighborSearch()
 
         [6]  [5]  [4]
     */
-	int32_t neighbor_right[9][2] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
+	int8_t neighbor_right[9][2] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
 	for (int j = 0; j < border_length; j++)
     {
 		for (int i = 0; i < 8; i++)
@@ -326,26 +317,18 @@ void optimizeBorder()
         // border_location_left[i][0];  //一行只要一个就行了，行的索引是[0]，左边界需要的是每行最右侧的点
         // 开始判断
         // printf("i=%d, border_location_left[i][1]=%d, border_location_left[i][0]=%d\n", i, border_location_left[i][1], border_location_left[i][0]);
-        if (border_location_left[i][1] > border_location_left_optimized[border_location_left[i][0]])
-        {
-            border_location_left_optimized[border_location_left[i][0]] = border_location_left[i][1];
-        }
+        // if (border_location_left[i][1] > border_location_left_optimized[border_location_left[i][0]])
+        // {
+        //     printf("ciallo~");
+        // }
         
     }
     //验证用
-    //这里注释一下前一个和后一个的意义
-    // for (int i = 0; i < image_h; i++)
-    // {
-    //     printf("New Border: %d, %d\n", i, border_location_left_optimized[i]);
-    // }
-    for (int i = 0; i < image_h; i++)
-    {
-        // bin_image[i][border_location_left_optimized[i]] = 152;
-    }
-    
+//     for (int i = 0; i < image_h; i++)
+//     {
+//         printf("New Border: %d, %d\n", i, border_location_left_optimized[i]);
+//     }
 }
-
-
 
 void image_process(void)
 {
@@ -360,9 +343,8 @@ void image_process(void)
         neighborSearch();
 		// search((uint16)USE_num, image, bin_image, &data_statics_l, &data_statics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
 	}
-    
-    optimizeBorder();
     printToCSV(bin_image, "output.csv");
+    optimizeBorder();
 }
 
 int main(){
@@ -384,27 +366,9 @@ int main(){
             Binimage.at<uint8_t>(i, j) = bin_image[i][j];
         }
     }
-
-    // 创建一个彩色图像，与二值化数组的大小相同
-    Mat Binimage_color(image_h, image_w, CV_8UC3, Scalar(0, 0, 0)); // 初始化为全黑色
-    // 将二值化数组中的白色像素点绘制为指定颜色
-    for (int i = 0; i < image_h; i++) {
-        for (int j = 0; j < image_w; j++) {
-            if (bin_image[i][j] == 255) { // 白色像素点
-                Binimage_color.at<Vec3b>(i, j) = Vec3b(255, 255, 255); // 设置为白色（BGR颜色）
-            }
-        }
-    }
-    for (int i = 0; i < image_h; i++) {
-        draw_point(border_location_left[i][1], border_location_left[i][0],GREEN, Binimage_color);
-        // draw_point(right_line[i][1], right_line[i][0], GREEN, Binimage_color);
-        //draw_point(left_points[i][1], left_points[i][0], PINK, Binimage_color);
-        //draw_point(right_points[i][1], right_points[i][0], PINK, Binimage_color);
-    }
-
     // 显示图像
-    namedWindow("Binimage_color");
-    imshow("Binimage_color", Binimage_color);
+    namedWindow("Binimage");
+    imshow("Binimage", Binimage);
 
 	namedWindow("output", WINDOW_NORMAL);
 	imshow("output", roadImage);

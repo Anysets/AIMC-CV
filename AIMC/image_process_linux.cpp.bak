@@ -3,36 +3,34 @@
 #include <vector>
 #define _CRT_SECURE_NO_WARNINGS
 /*
-ÕâÀïÊÇÆðµã£¨0.0£©************  col  *¡ª¡ª>*************xÖµ×î´ó
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã£¨0.0ï¿½ï¿½************  col  *ï¿½ï¿½ï¿½ï¿½>*************xÖµï¿½ï¿½ï¿½
 ************************************************************
 ************************************************************
 ************************************************************
 ************************************************************
-******************¼ÙÈçÕâÊÇÒ»¸±Í¼Ïñ*************************
+******************ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Í¼ï¿½ï¿½*************************
 row  *****************************************************
 ***********************************************************
 ***********************************************************
 ***********************************************************
 ***********************************************************
 ***********************************************************
-yÖµ×î´ó*******************************************(94.60)
+yÖµï¿½ï¿½ï¿½*******************************************(94.60)
 */
-#define ROAD  "/home/anysets/Documents/Photos/1.BMP"
-// #define ROAD "E:\\Files\\OpenCV++\\test.BMP"
+#define ROAD  "/home/anysets/Documents/Photos/test.BMP"
 #define IMAGE_H 120
 #define IMAGE_W 188
 #define image_h 60
 #define image_w 120
-//×¢ÒâÕâ¸öborder_length²»ÄÜÌ«¶à£¬»áµ¼ÖÂÊý×éÔ½½ç
-#define border_length 50
+#define border_length 150
 uint8_t image_center = image_w / 2;
 
-//½«Í¼ÏñÊý×é´òÓ¡ÖÁcsvÎÄ¼þ--------------------------------------------------------
+//ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½csvï¿½Ä¼ï¿½--------------------------------------------------------
 void printToCSV(uint8_t matrix[][image_w], const std::string& filename) {
 	std::ofstream outputFile(filename);
 
 	if (!outputFile.is_open()) {
-		std::cerr << "ÎÞ·¨´ò¿ªÎÄ¼þ£º" << filename << std::endl;
+		std::cerr << "ï¿½Þ·ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½" << filename << std::endl;
 		return;
 	}
 
@@ -46,14 +44,14 @@ void printToCSV(uint8_t matrix[][image_w], const std::string& filename) {
 	}
 
 	outputFile.close();
-	printf("Êä³öÎªcsv³É¹¦\n");
+	printf("ï¿½ï¿½ï¿½Îªcsvï¿½É¹ï¿½\n");
 }
 
-uint8_t image[IMAGE_H][IMAGE_W];    //Ô­Ê¼Í¼Ïñ
-uint8_t bin_image[image_h][image_w]; //×îºóÊ¹ÓÃµÄ¶þÖµ»¯Í¼Ïñ
+uint8_t image[IMAGE_H][IMAGE_W];    //Ô­Ê¼Í¼ï¿½ï¿½
+uint8_t bin_image[image_h][image_w]; //ï¿½ï¿½ï¿½Ê¹ï¿½ÃµÄ¶ï¿½Öµï¿½ï¿½Í¼ï¿½ï¿½
 void dataTrans(const Mat& image, uint8_t imageArray[][IMAGE_W]) {
 	Mat grayImage;
-	cvtColor(image, grayImage, COLOR_BGR2GRAY); // ½«²ÊÉ«Í¼Ïñ×ª»»Îª»Ò¶ÈÍ¼Ïñ
+	cvtColor(image, grayImage, COLOR_BGR2GRAY); // ï¿½ï¿½ï¿½ï¿½É«Í¼ï¿½ï¿½×ªï¿½ï¿½Îªï¿½Ò¶ï¿½Í¼ï¿½ï¿½
 
 	for (int i = 0; i < IMAGE_H; ++i) {
 		for (int j = 0; j < IMAGE_W; ++j) {
@@ -61,7 +59,7 @@ void dataTrans(const Mat& image, uint8_t imageArray[][IMAGE_W]) {
 		}
 	}
 }
-//´ó½ò·¨ÇóãÐÖµ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
     #define GrayScale 256
     int Pixel_Max = 0;
@@ -79,32 +77,32 @@ uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
     }
 
     uint32_t gray_sum = 0;
-    // Í³¼Æ»Ò¶È¼¶ÖÐÃ¿¸öÏñËØÔÚÕû·ùÍ¼ÏñÖÐµÄ¸öÊý
+    // Í³ï¿½Æ»Ò¶È¼ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ÐµÄ¸ï¿½ï¿½ï¿½
     for (i = 0; i < height; i += 2) {
         for (j = 0; j < width; j += 2) {
-            pixelCount[(int)image[i][j]]++;  // ½«µ±Ç°µÄµãµÄÏñËØÖµ×÷Îª¼ÆÊýÊý×éµÄÏÂ±ê
-            gray_sum += (int)image[i][j];       // »Ò¶ÈÖµ×ÜºÍ
+            pixelCount[(int)image[i][j]]++;  // ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â±ï¿½
+            gray_sum += (int)image[i][j];       // ï¿½Ò¶ï¿½Öµï¿½Üºï¿½
             if (image[i][j] > Pixel_Max)   Pixel_Max = image[i][j];
             if (image[i][j] < Pixel_Min)   Pixel_Min = image[i][j];
         }
     }
 
-    // ¼ÆËãÃ¿¸öÏñËØÖµµÄµãÔÚÕû·ùÍ¼ÏñÖÐµÄ±ÈÀý
+    // ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ÐµÄ±ï¿½ï¿½ï¿½
     for (i = Pixel_Min; i < Pixel_Max; i++) {
         pixelPro[i] = (float)pixelCount[i] / pixelSum;
     }
 
-    // ±éÀú»Ò¶È¼¶[0,255]
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ò¶È¼ï¿½[0,255]
     float w0, w1, u0tmp, u1tmp, u0, u1, u, deltaTmp, deltaMax = 0;
     w0 = w1 = u0tmp = u1tmp = u0 = u1 = u = deltaTmp = 0;
     for (j = Pixel_Min; j < Pixel_Max; j++) {
-        w0 += pixelPro[j];  // ±³¾°²¿·ÖÃ¿¸ö»Ò¶ÈÖµµÄÏñËØµãËùÕ¼±ÈÀýÖ®ºÍ   ¼´±³¾°²¿·ÖµÄ±ÈÀý
-        u0tmp += j * pixelPro[j];  // ±³¾°²¿·Ö Ã¿¸ö»Ò¶ÈÖµµÄµãµÄ±ÈÀý *»Ò¶ÈÖµ
+        w0 += pixelPro[j];  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Ò¶ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÄ±ï¿½ï¿½ï¿½
+        u0tmp += j * pixelPro[j];  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¿ï¿½ï¿½ï¿½Ò¶ï¿½Öµï¿½Äµï¿½Ä±ï¿½ï¿½ï¿½ *ï¿½Ò¶ï¿½Öµ
         w1 = 1 - w0;
         u1tmp = gray_sum / pixelSum - u0tmp;
-        u0 = u0tmp / w0;              // ±³¾°Æ½¾ù»Ò¶È
-        u1 = u1tmp / w1;              // Ç°¾°Æ½¾ù»Ò¶È
-        u = u0tmp + u1tmp;            // È«¾ÖÆ½¾ù»Ò¶È
+        u0 = u0tmp / w0;              // ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½Ò¶ï¿½
+        u1 = u1tmp / w1;              // Ç°ï¿½ï¿½Æ½ï¿½ï¿½ï¿½Ò¶ï¿½
+        u = u0tmp + u1tmp;            // È«ï¿½ï¿½Æ½ï¿½ï¿½ï¿½Ò¶ï¿½
         deltaTmp = (float)(w0 * w1 * (u0 - u1) * (u0 - u1));
         if (deltaTmp > deltaMax) {
             deltaMax = deltaTmp;
@@ -114,7 +112,7 @@ uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
             break;
         }
     }
-    //¹Ì¶¨ãÐÖµ
+    //ï¿½Ì¶ï¿½ï¿½ï¿½Öµ
 //if (threshold > 90 && threshold < 130)
 //    last_threshold = threshold;
 //else
@@ -122,24 +120,24 @@ uint8_t otsuThreshold(uint8_t image[][IMAGE_W]) {
 
     return threshold;
 }
-// ´ó½ò·¨¶þÖµ»¯
+// ï¿½ï¿½ò·¨¶ï¿½Öµï¿½ï¿½
 void turn_to_bin(void) {
     uint8_t image_threshold = otsuThreshold(image);
-    printf("ãÐÖµ=%d\n", image_threshold);
+    printf("ï¿½ï¿½Öµ=%d\n", image_threshold);
 
-    // ±éÀúÔ­Ê¼Í¼ÏñÊý×é£¬¸ù¾Ý¶¯Ì¬ãÐÖµ½øÐÐ¶þÖµ»¯
+    // ï¿½ï¿½ï¿½ï¿½Ô­Ê¼Í¼ï¿½ï¿½ï¿½ï¿½ï¿½é£¬ï¿½ï¿½ï¿½Ý¶ï¿½Ì¬ï¿½ï¿½Öµï¿½ï¿½ï¿½Ð¶ï¿½Öµï¿½ï¿½
     for (int i = 0; i < IMAGE_H; ++i) {
         for (int j = 0; j < IMAGE_W; ++j) {
             if (image[i][j] > image_threshold) {
-                image[i][j] = 255; // Èç¹ûÔ­Ê¼Í¼Ïñ»Ò¶ÈÖµ´óÓÚãÐÖµ£¬ÉèÖÃÎª°×É«ÏñËØ
+                image[i][j] = 255; // ï¿½ï¿½ï¿½Ô­Ê¼Í¼ï¿½ï¿½Ò¶ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½
             }
             else {
-                image[i][j] = 0; // Èç¹ûÔ­Ê¼Í¼Ïñ»Ò¶ÈÖµÐ¡ÓÚµÈÓÚãÐÖµ£¬ÉèÖÃÎªºÚÉ«ÏñËØ
+                image[i][j] = 0; // ï¿½ï¿½ï¿½Ô­Ê¼Í¼ï¿½ï¿½Ò¶ï¿½ÖµÐ¡ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½
             }
         }
     }
 }
-//Í¼ÏñÑ¹ËõÒ»±¶
+//Í¼ï¿½ï¿½Ñ¹ï¿½ï¿½Ò»ï¿½ï¿½
 void image_compress(uint8_t image[IMAGE_H][IMAGE_W], uint8_t iamge_zip[image_h][image_w]) {
 	for (uint8_t row = 0; row < IMAGE_H; row+=2) {
 		for (uint8_t col = 0; col < IMAGE_W; col+=2) {
@@ -147,21 +145,21 @@ void image_compress(uint8_t image[IMAGE_H][IMAGE_W], uint8_t iamge_zip[image_h][
 		}
 	}
 }
-//»­¸öºÚ¿ò
+//ï¿½ï¿½ï¿½ï¿½ï¿½Ú¿ï¿½
 void image_draw_rectan(uint8_t image[image_h][image_w]) {
-    for (uint8_t i = 0; i < image_h; i++) { //°ÑÇ°Á½ÁÐºÍ×îºóÁ½ÁÐ»­ºÚ¿ò
+    for (uint8_t i = 0; i < image_h; i++) { //ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ðºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½Ú¿ï¿½
         image[i][0] = 0;
         image[i][1] = 0;
         image[i][image_w - 1] = 0;
         image[i][image_w - 2] = 0;
     }
-    for (uint8_t i = 0; i < image_w; i++) { //°ÑÍ¼Ïñ×îÉÏÃæ»­ºÚ¿ò
+    for (uint8_t i = 0; i < image_w; i++) { //ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ»­ï¿½Ú¿ï¿½
         image[0][i] = 0;
         image[1][i] = 0;
     }
 }
 
-//ÕÒµ½Æðµã£¬´Ó×îµ×²¿µÄÖÐÐÄ¿ªÊ¼Ñ°ÕÒ
+//ï¿½Òµï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½Ê¼Ñ°ï¿½ï¿½
 int32_t start_point_l[2] = { 0 };
 int32_t start_point_r[2] = { 0 };
 int32_t start_line = image_h - 1;
@@ -171,28 +169,28 @@ int8_t getStartPoint()
 	uint8_t right_flag = 0;
 	cout << "Found Left Start Point: " << start_point_l[0] << ", " << start_point_l[1] << endl;
     cout << "Found Right Start Point: " << start_point_r[0] << ", " << start_point_r[1] << endl;
-	//³õÊ¼»¯
+	//ï¿½ï¿½Ê¼ï¿½ï¿½
 	start_point_l[0] = 0;
 	start_point_l[1] = 0;
 	start_point_r[0] = 0;
 	start_point_r[1] = 0;
-	//´ÓÖÐ¼äÏò×óÑ°ÕÒ
-	for (uint32_t i = image_center; i > 1; i--)  //i>1µÄÔ­ÒòÊÇ0ºÍ1Á½ÁÐÒÑ¾­±»È«²¿ÖÃ0ÁË£¬ÇÒÈôi=0»ò1Ê±ÏÂÃæÊý×é»áÔ½½ç
+	//ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½Ñ°ï¿½ï¿½
+	for (uint32_t i = image_center; i > 1; i--)  //i>1ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½0ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½i=0ï¿½ï¿½1Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½
 	{
 		if (bin_image[start_line][i] == 255 && bin_image[start_line][i - 1] == 0 && bin_image[start_line][i - 2] == 0)
 		{
-			start_point_l[0] = start_line; //ÐÐ
-			start_point_l[1] = i-1; //ÁÐ
+			start_point_l[0] = start_line; //ï¿½ï¿½
+			start_point_l[1] = i-1; //ï¿½ï¿½
 			left_flag = 1;
 			break;
 		}
 	}
-	//´ÓÖÐ¼äÏòÓÒÑ°ÕÒ
-	for (uint32_t i = image_center; i < image_w - 2; i++)  //i < image_w-2µÄÔ­ÒòÍ¬ÉÏ
+	//ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½Ñ°ï¿½ï¿½
+	for (uint32_t i = image_center; i < image_w - 2; i++)  //i < image_w-2ï¿½ï¿½Ô­ï¿½ï¿½Í¬ï¿½ï¿½
 	{
 		if (bin_image[start_line][i] == 255 && bin_image[start_line][i + 1] == 0 && bin_image[start_line][i + 2] == 0)
 		{
-			start_point_r[0] = start_line; //x×ø±ê
+			start_point_r[0] = start_line; //xï¿½ï¿½ï¿½ï¿½
 			start_point_r[1] = i+1;
 			right_flag = 1;
 			break;
@@ -202,20 +200,20 @@ int8_t getStartPoint()
 	else { return 0; }
 }
 
-//°ËÁÚÓòrewrite
-//¼ÇÂ¼×ó±ß½çµÄÊý¾Ý
-int32_t border_location_left[border_length][2] = { 0 };  //¼ÇÂ¼±ß½çÎ»ÖÃ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½rewrite
+//ï¿½ï¿½Â¼ï¿½ï¿½ß½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+int32_t border_location_left[border_length][2] = { 0 };  //ï¿½ï¿½Â¼ï¿½ß½ï¿½Î»ï¿½ï¿½
 int32_t border_count_left = 0;
-int32_t growth_direction_left[border_length] = { 0 };  //¼ÇÂ¼Éú³¤·½Ïò
+int32_t growth_direction_left[border_length] = { -1 };  //ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 int32_t growth_count_left = 0;
-//¼ÇÂ¼ÓÒ±ß½çµÄÊý¾Ý
-int32_t border_location_right[border_length][2] = { 0 };  //¼ÇÂ¼±ß½çÎ»ÖÃ
+//ï¿½ï¿½Â¼ï¿½Ò±ß½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+int32_t border_location_right[border_length][2] = { 0 };  //ï¿½ï¿½Â¼ï¿½ß½ï¿½Î»ï¿½ï¿½
 int32_t border_count_right = 0;
-int32_t growth_direction_right[border_length] = { 0 };  //¼ÇÂ¼Éú³¤·½Ïò
+int32_t growth_direction_right[border_length] = { -1 };  //ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 int32_t growth_count_right = 0;
 void neighborSearch()
 {
-    //×ó±ß½ç²¿·Ö
+    //ï¿½ï¿½ß½ç²¿ï¿½ï¿½
 	/*
         [2]  [1]  [0/8]
 
@@ -226,11 +224,9 @@ void neighborSearch()
     int32_t neighbor_left[9][2] = {{-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}};
     for (int j = 0; j < border_length; j++)
     {
-		printf("%d", j);
-        for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 8; i++)
         {
-            // printf("ciallo:%d\n", bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]]);
-            // printf("ciallo+1:%d\n", bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]]);
+            // printf("%d\n", bin_image[start_point_l[0]][start_point_l[1]]);
             if (bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]] == 255 && bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] == 0)
             {
                 // printf("h=%d\n", bin_image[start_point_l[0] + neighbor_left[i][0]][start_point_l[1] + neighbor_left[i][1]]);
@@ -238,13 +234,11 @@ void neighborSearch()
                 growth_direction_left[growth_count_left] = i;
 				growth_count_left++;
                 border_count_left++;
-                printf("start_point_l[0] + neighbor_left[i+1][0]=%d\n", start_point_l[0] + neighbor_left[i+1][0]);
+                // printf("start_point_l[0] + neighbor_left[i+1][0]=%d\n", start_point_l[0] + neighbor_left[i+1][0]);
                 border_location_left[border_count_left][0] = start_point_l[0] + neighbor_left[i+1][0];
                 border_location_left[border_count_left][1] = start_point_l[1] + neighbor_left[i+1][1];
-                // printf("%d : %d, %d\n", j, start_point_l[0] + neighbor_left[i+1][0], start_point_l[1] + neighbor_left[i+1][1]);
-                // printf("%d:border_location_left[7]: %d, %d\n", j, border_location_left[7][0], border_location_left[7][1]);
-				// printf("%d\n", border_count_left);
-                // bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] = 151;
+                printf("%d : %d, %d\n", j, start_point_l[0] + neighbor_left[i+1][0], start_point_l[1] + neighbor_left[i+1][1]);
+				bin_image[start_point_l[0] + neighbor_left[i+1][0]][start_point_l[1] + neighbor_left[i+1][1]] = 151;
                 start_point_l[0] = start_point_l[0] + neighbor_left[i+1][0];
                 start_point_l[1] = start_point_l[1] + neighbor_left[i+1][1];
 				// printf("New Left Start Point: %d, %d\n", start_point_l[0], start_point_l[1]);
@@ -254,28 +248,23 @@ void neighborSearch()
             }
         }
     }
-    // ÕâÊÇÔÚÍâ²¿ÐÞ¸Äbin_imageµÄÊµÑé
+    // ï¿½ï¿½ï¿½border_location_left
     for (int i = 0; i < border_length; i++)
     {
-        bin_image[border_location_left[i][0]][border_location_left[i][1]] = 151;
+        printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
     }
-    // ¼ì²éborder_location_left
-    // for (int i = 0; i < border_length; i++)
-    // {
-    //     printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
-    // }
-    // printf("------------------------------------------------------");
-    // for (int i = 0; i < border_length; i++)
-    // {
-    //     printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
-    // }
-	// ÓÃÓÚ·ÖÎöÉú³¤·½Ïò
+    printf("------------------------------------/home/anysets/Documents/AIMC-CV------------------");
+    for (int i = 0; i < border_length; i++)
+    {
+        printf("border_location_left[%d]: %d, %d\n", i, border_location_left[i][0], border_location_left[i][1]);
+    }
+	// ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	// printf("growth_count_left: %d", growth_count_left);
 	// for (int i = 0; i< 200; i++)
 	// {
 	// 	printf("%d\n", growth_direction_left[i]);
 	// }
-	//ÓÒ±ß½ç²¿·Ö
+	//ï¿½Ò±ß½ç²¿ï¿½ï¿½
     /*
         [0/8]  [1]  [2]
 
@@ -306,7 +295,7 @@ void neighborSearch()
 
         }
     }
-	// ÓÃÓÚ·ÖÎöÉú³¤·½Ïò
+	// ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	// printf("growth_count_right: %d", growth_count_right);
 	// for (int i = 0; i< 200; i++)
 	// {
@@ -314,45 +303,37 @@ void neighborSearch()
 	// }
 }
 
-// ´æ´¢ÓÅ»¯ºóµÄ×ó±ß½ç£¬Ã¿ÐÐÏñËØ¶¼ÓÐ·Ý£¬×¢Òâ´Ë´¦µÄÈ¡Öµ·¶Î§Îª-127¡«127£¬ÕýºÃÔÚÑ¹ËõºóµÄÍ¼Ïñ·¶Î§ÄÚ
+// ï¿½æ´¢ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß½ç£¬Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½Ð·Ý£ï¿½×¢ï¿½ï¿½Ë´ï¿½ï¿½ï¿½È¡Öµï¿½ï¿½Î§Îª-127ï¿½ï¿½127ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Î§ï¿½ï¿½
 int32_t border_location_left_optimized[image_h] = { -1 };
 void optimizeBorder()
 {
-    // ×ó±ß½çµÄ²¿·Ö
-    // Ñ­»·ÒÑ¾­ÌáÈ¡µ½µÄ±ß½ç£¬È¥³ý²»ÐèÒªµÄµã
+    // ï¿½ï¿½ß½ï¿½Ä²ï¿½ï¿½ï¿½
+    // Ñ­ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ä±ß½ç£¬È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Äµï¿½
     for (int i = 0; i < border_length; i++)
     {
         // printf("%d\n", i);
-        // border_location_left[i][0];  //Ò»ÐÐÖ»ÒªÒ»¸ö¾ÍÐÐÁË£¬ÐÐµÄË÷ÒýÊÇ[0]£¬×ó±ß½çÐèÒªµÄÊÇÃ¿ÐÐ×îÓÒ²àµÄµã
-        // ¿ªÊ¼ÅÐ¶Ï
+        // border_location_left[i][0];  //Ò»ï¿½ï¿½Ö»ÒªÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[0]ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½Äµï¿½
+        // ï¿½ï¿½Ê¼ï¿½Ð¶ï¿½
         // printf("i=%d, border_location_left[i][1]=%d, border_location_left[i][0]=%d\n", i, border_location_left[i][1], border_location_left[i][0]);
-        if (border_location_left[i][1] > border_location_left_optimized[border_location_left[i][0]])
-        {
-            border_location_left_optimized[border_location_left[i][0]] = border_location_left[i][1];
-        }
+        // if (border_location_left[i][1] > border_location_left_optimized[border_location_left[i][0]])
+        // {
+        //     printf("ciallo~");
+        // }
         
     }
-    //ÑéÖ¤ÓÃ
-    //ÕâÀï×¢ÊÍÒ»ÏÂÇ°Ò»¸öºÍºóÒ»¸öµÄÒâÒå
-    // for (int i = 0; i < image_h; i++)
-    // {
-    //     printf("New Border: %d, %d\n", i, border_location_left_optimized[i]);
-    // }
-    for (int i = 0; i < image_h; i++)
-    {
-        // bin_image[i][border_location_left_optimized[i]] = 152;
-    }
-    
+    //ï¿½ï¿½Ö¤ï¿½ï¿½
+//     for (int i = 0; i < image_h; i++)
+//     {
+//         printf("New Border: %d, %d\n", i, border_location_left_optimized[i]);
+//     }
 }
-
-
 
 void image_process(void)
 {
-    turn_to_bin();  //Í¼Ïñ¶þÖµ»¯
-    image_compress(image,bin_image); //Í¼ÏñÑ¹Ëõ
+    turn_to_bin();  //Í¼ï¿½ï¿½ï¿½Öµï¿½ï¿½
+    image_compress(image,bin_image); //Í¼ï¿½ï¿½Ñ¹ï¿½ï¿½
     image_draw_rectan(bin_image);
-    if (getStartPoint())  //ÏÈ»ñµÃÆðµã
+    if (getStartPoint())  //ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½
 	{
 		printf("Start point found.\n");
         cout << "Found Left Start Point: " << start_point_l[0] << ", " << start_point_l[1] << endl;
@@ -360,9 +341,8 @@ void image_process(void)
         neighborSearch();
 		// search((uint16)USE_num, image, bin_image, &data_statics_l, &data_statics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
 	}
-    
-    optimizeBorder();
     printToCSV(bin_image, "output.csv");
+    optimizeBorder();
 }
 
 int main(){
@@ -377,34 +357,16 @@ int main(){
 
     image_process();
 
-    //ÓÃopencvÏÔÊ¾
+    //ï¿½ï¿½opencvï¿½ï¿½Ê¾
     Mat Binimage(image_h, image_w, CV_8UC1);
     for (int i = 0; i < image_h; i++) {
         for (int j = 0; j < image_w; j++) {
             Binimage.at<uint8_t>(i, j) = bin_image[i][j];
         }
     }
-
-    // ´´½¨Ò»¸ö²ÊÉ«Í¼Ïñ£¬Óë¶þÖµ»¯Êý×éµÄ´óÐ¡ÏàÍ¬
-    Mat Binimage_color(image_h, image_w, CV_8UC3, Scalar(0, 0, 0)); // ³õÊ¼»¯ÎªÈ«ºÚÉ«
-    // ½«¶þÖµ»¯Êý×éÖÐµÄ°×É«ÏñËØµã»æÖÆÎªÖ¸¶¨ÑÕÉ«
-    for (int i = 0; i < image_h; i++) {
-        for (int j = 0; j < image_w; j++) {
-            if (bin_image[i][j] == 255) { // °×É«ÏñËØµã
-                Binimage_color.at<Vec3b>(i, j) = Vec3b(255, 255, 255); // ÉèÖÃÎª°×É«£¨BGRÑÕÉ«£©
-            }
-        }
-    }
-    for (int i = 0; i < image_h; i++) {
-        draw_point(border_location_left[i][1], border_location_left[i][0],GREEN, Binimage_color);
-        // draw_point(right_line[i][1], right_line[i][0], GREEN, Binimage_color);
-        //draw_point(left_points[i][1], left_points[i][0], PINK, Binimage_color);
-        //draw_point(right_points[i][1], right_points[i][0], PINK, Binimage_color);
-    }
-
-    // ÏÔÊ¾Í¼Ïñ
-    namedWindow("Binimage_color");
-    imshow("Binimage_color", Binimage_color);
+    // ï¿½ï¿½Ê¾Í¼ï¿½ï¿½
+    namedWindow("Binimage");
+    imshow("Binimage", Binimage);
 
 	namedWindow("output", WINDOW_NORMAL);
 	imshow("output", roadImage);
