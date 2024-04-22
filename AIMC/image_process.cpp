@@ -117,6 +117,34 @@ void image_compress(uint8_t image[IMAGE_H][IMAGE_W], uint8_t iamge_zip[image_h][
 		}
 	}
 }
+/***滤波***/
+#define threshold_max	(255 * 5) // 此参数可根据自己的需求调节
+#define threshold_min	(255 * 2) // 此参数可根据自己的需求调节
+void image_filter(void) {
+    uint16_t i, j;
+    uint32_t num = 0;
+
+    for (i = 1; i < image_h - 1; i++)
+    {
+        for (j = 1; j < (image_w - 1); j++)
+        {
+            // 统计八个方向的像素值
+            num = bin_image[i - 1][j - 1] + bin_image[i - 1][j] + bin_image[i - 1][j + 1]
+                + bin_image[i][j - 1] + bin_image[i][j + 1]
+                + bin_image[i + 1][j - 1] + bin_image[i + 1][j] + bin_image[i + 1][j + 1];
+
+            // 对像素进行处理
+            if (num >= threshold_max && bin_image[i][j] == 0)
+            {
+                bin_image[i][j] = 255; // 白
+            }
+            if (num <= threshold_min && bin_image[i][j] == 255)
+            {
+                bin_image[i][j] = 0; // 黑
+            }
+        }
+    }
+}
 //画个黑框
 void image_draw_rectan(uint8_t image[image_h][image_w]) {
     for (uint8_t i = 0; i < image_h; i++) { //把前两列和最后两列画黑框
